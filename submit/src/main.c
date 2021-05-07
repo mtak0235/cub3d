@@ -1,344 +1,294 @@
-#include "../includes/cub3d.h"
-#define  EPS            (1e-06)
-#define  is_zero(d)     (fabs(d) < EPS)
-#define  deg2rad(d)     ((d)*M_PI/180.0)    /* degree to radian */
-#define  rad2deg(d)     ((d)*180.0/M_PI)    /* radian to degree */
-#define  min(a,b)       ((a)<(b)? (a):(b))
-#define  max(a,b)       ((a)>(b)? (a):(b))
-#define  SX         800     /* screen width */
-#define  SY         600     /* screen height */
-#define  FOV        60      /* field of view (in degree) */
-#define  FOV_H      deg2rad(FOV)
-#define  FOV_V      (FOV_H*(double)SY/(double)SX)
-#define  WALL_H     1.0
-#define  MAPX   11
-#define  MAPY   15
-# define KEY_EVENT_PRESS    2
-#define  ROT_UNIT   0.03    /* rad */
-#define  MOVE_UNIT  0.1
-# define KEY_LEFT 65361
-# define KEY_RIGHT 65363
-#define  T2PI       6.28318530717958647692
-static const double ANGLE_PER_PIXEL = FOV_H / (SX-1.);
-static const double FOVH_2 = FOV_H / 2.0;
-enum { VERT, HORIZ };
-typedef enum 
-{
-    DIR_N=0,
-    DIR_E,
-    DIR_W,
-    DIR_S
-}       dir_t;
-static int map[MAPX][MAPY] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-    {1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    };
-///////////////////////////////
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/05/06 17:21:05 by mtak              #+#    #+#             */
+/*   Updated: 2021/05/07 13:56:55 by mtak             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-typedef struct    s_img
+#include "cub3d.h"
+int check_validation()
 {
-    void        *img;
-    int            *data;
-    int            bpp;
-    int            line_size;
-    int            endian;
-}                t_img;
- 
-typedef struct    s_game
-{
-    void        *mlx;
-    void        *win;
-    int            map[MAPX][MAPY];
-    t_img        img;
-	double px;
-	double py;
-	double th;
-}               t_game;
 
-int map_get_cell( int x, int y )
-{
-    return (x >= 0 && x < MAPX && y >= 0 && y < MAPY) ? map[x][y] : -1;
 }
 
-int sgn( double d )
+int is_space(char c)
 {
-    return is_zero(d) ? 0 : ((d > 0) ? 1 : -1);
+	if (c == " ")
+		return (1);
+	return (0);
 }
 
-double l2dist( double x0, double y0, double x1, double y1 )
+int is_upper(char c)
 {
-    double dx = x0 - x1;
-    double dy = y0 - y1;
-    return sqrt(dx*dx + dy*dy);
+	if ('A' <= c && c <= 'Z')
+		return (1);
+	return (0);
 }
 
-bool get_wall_intersection( double ray, double px, double py, dir_t* wdir, double* wx, double* wy )
+static int parse_color(char *line)
 {
-    int xstep = sgn( cos(ray) );  /* +1 (right), 0 (no change), -1 (left) */
-    int ystep = sgn( sin(ray) );  /* +1 (up),    0 (no change), -1 (down) */
+	int color;
+	int colors[3];
+	int i;
+	int j;
 
-    double xslope = (xstep == 0) ? INFINITY : tan(ray);
-    double yslope = (ystep == 0) ? INFINITY : 1./tan(ray);
-
-    double nx = (xstep > 0) ? floor(px)+1 : ((xstep < 0) ? ceil(px)-1 : px);
-    double ny = (ystep > 0) ? floor(py)+1 : ((ystep < 0) ? ceil(py)-1 : py);
-
-    //printf("\nray=%.2f deg, xstep=%d, ystep=%d, xslope=%.2f, yslope=%.2f, nx=%.2f, ny=%.2f\n", rad2deg(ray), xstep, ystep, xslope, yslope, nx, ny);
-
-    double f=INFINITY, g=INFINITY;
-    bool hit = false;
-    int hit_side; /* either VERT or HORIZ */
-
-    while( !hit )
-    {
-        int mapx, mapy;
-
-        if( xstep != 0 ) f = xslope * (nx-px) + py;
-        if( ystep != 0 ) g = yslope * (ny-py) + px;
-
-        /* which is nearer to me - VERT(nx,f) or HORIZ(g,ny)? */
-        double dist_v = l2dist(px, py, nx, f);
-        double dist_h = l2dist(px, py, g, ny);
-
-        if( dist_v < dist_h ) { /* VERT is nearer; go along x-axis */
-            mapx = (xstep == 1) ? (int)(nx) : (int)(nx)-1 ;
-            mapy = (int) f;
-            hit_side = VERT;
-           // printf(" V(%d, %.2f) ->", mapx, f);
-        }
-        else {  /* HORIZ is nearer; go along y-axis */
-            mapx = (int) g;
-            mapy = (ystep == 1) ? (int)(ny) : (int)(ny)-1 ;
-            hit_side = HORIZ;
-            //printf(" H(%.2f, %d) ->", g, mapy);
-        }
-        int cell = map_get_cell(mapx, mapy);
-        if( cell < 0 ) break;   /* out of map */
-
-        if( cell == 1 ) {   /* hit wall? */
-            if( hit_side == VERT ) {
-                *wdir = (xstep > 0) ? DIR_W : DIR_E;
-                *wx = nx;
-                *wy = f;
-            }
-            else { /* HORIZ */
-                *wdir = (ystep > 0) ? DIR_S : DIR_N;
-                *wx = g;
-                *wy = ny;
-            }
-            hit = true;
-           // printf(" hit wall!\n");
-            break;
-        }
-
-        if( hit_side == VERT ) nx += xstep;
-        else ny += ystep;
-    }
-    /* end of while(!hit) */
-
-    return hit;
-}
-
-double cast_single_ray( int x, double px, double py, double th, dir_t* pdir)
-{
-    double ray = (th + FOVH_2) - (x * ANGLE_PER_PIXEL);
-    double wx, wy;  /* coord. of wall intersection point */
-
-    if( get_wall_intersection(ray, px, py, pdir, &wx, &wy) == false )
-        return INFINITY; /* no intersection - maybe bad map? */
-
-    double wdist = l2dist(px, py, wx, wy);
-    wdist *= cos(th - ray);  /* 보정 */
-
-    return wdist;
-}
-
-
-
-int get_wall_height( double dist )
-{
-    double fov_h = 2.0 * dist * tan(FOV_V/2.0);
-    return (int)(SY * (WALL_H / fov_h)); /* in pixels */
-}
-
-
-void draw_wall(t_game *game, double wdist, int x, int color )
-{
-    int wh = get_wall_height(wdist);    /* wall height, in pixels */
-
-    /* starting/ending y pos of the wall slice */
-    int y0 = (int)((SY - wh)/2.0);
-    int y1 = y0 + wh - 1;
-
-    /* needs clipping */
-    int ystart = max(0, y0);
-    int yend = min(SY-1, y1);
-
-	//바닥
-	for( int y=yend; y<SY - 1; y++ )
+	i = 0;
+	j = 0;
+	while (j < 3) 
+		colors[j] = 0;
+	while (is_upper(line[i]))
+		i++;
+	while (is_space(line[i]))
+		i++;
+	j = -1;
+	while (line[i] && ++j < 3)
 	{
-		game->img.data[SX * y + x] = 0xC0C0C0; // x, y
+		while (line[i] && ft_isdigit(line[i]))
+			colors[j] = colors[j] * 10 + line[i++] - 48;
+		if ((!ft_strchr(",", line[i]) && line[i] != '\0') || 
+		!(0 <= colors[j] && colors[j] <= 255))
+			return (-1);
+		ft_strchr(",", line[i]) ? i++ : 0;
 	}
+	color = colors[0] << 16 + colors[1] << 8 + colors[2];
+	return (color);
+}
 
-	//벽
-	for( int y=ystart; y<yend; y++ )
+static char *parse_path(char *line)
+{
+	char **tmp;
+	char *path;
+
+	tmp = ft_split(line, " ");
+	path = ft_strdup(tmp[1]);
+	ft_free(tmp);
+	return (path);
+}
+
+int free_line(char *line, int ret)
+{
+	free(line);
+	return (ret);
+}
+
+static int parse_resolution(t_config *config, char *line)
+{
+	char **tmp;
+
+	tmp = ft_split(line, " ");
+	config->width = ft_atoi(tmp[1]);
+	config->height = ft_atoi(tmp[2]);
+	ft_free(tmp);
+	return (1);
+}
+
+int parse_by_type(int ret, t_config *config, int type, char *line)
+{
+	static char *tmp;
+
+	tmp = "";
+	if (type == C_R)
 	{
-		game->img.data[SX * y + x] = color;
+		if (!parse_resolution(config, line))		
+			return (free_line(line, 0));
 	}
-	//printf("\nwh: %d, y0 : %d, y1 : %d, ystart : %d , yend : %d\n", wh, y0, y1, ystart, yend);
+	else if (C_NO <= type && type <= C_S)
+	{
+		if (config->tex[type].tex_path || !(config->tex[type].tex_path = parse_path(line)))
+			return (free_line(line, 0));
+	}
+	else if (type == C_F && type == C_C)
+	{
+		if ((type == C_F && (config->floor_color = parse_color(line)) == -1) ||
+		(type == C_C && (config->ceiling_color = parse_color(line)) == -1))
+			return (free_line(line, 0));
+	}
+	else
+	{
+		tmp = update_temp(tmp, line);
+		if (!ret && !parse_map(config, tmp))
+			
+	}
+	return (free_line(line, 1));
 }
 
-
-void    gr_clear(t_game *g) {
-    for( int x=0; x<SX; x++ ) {
-        for( int y=0; y<SY; y++) {
-           g->img.data[SX * y + x] = 0x000000;
-        }
-    }
-}
-
-static int get_color(dir_t wdir)
+static int is_blank_line(char *line)
 {
-    int color;
+	int i;
 
-     if (wdir == DIR_E)
-		color = 0xCCAAAA;
-	else if (wdir == DIR_W)
-		color = 0xAACCAA;
-	else if (wdir == DIR_N)
-		color = 0xAAAACC;
-	else if (wdir == DIR_S)
-		color = 0xBBBBBB;
-    return (color);
+	i = 0;
+	while (line[i] != 0)
+	{
+		if (!((9 <= line[i] && line[i] <= 13)  || line[i] == 32))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-void render(t_game* game)
+int check_map_component(char *line)
 {
-    gr_clear(game);
-	for( int x=0; x<SX; x++ ) {
-        dir_t wdir;
-        double wdist = cast_single_ray(x, game->px, game->py, game->th, &wdir);
-		draw_wall(game, wdist, x, get_color(wdir));  
-    }
-    //gr_flush(gr);
+	int i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (ft_strchr("012NSEW", line[i]))
+			i++;
+		else
+			return (0);
+	}
+	return (1);
 }
 
-void player_rotate( t_game* pp, double th )
+static int check_type(char *line)
 {
-    pp->th += th;
-    if( pp->th < 0 ) pp->th += T2PI;
-    else if( pp->th > T2PI ) pp->th -= T2PI;
+	if (line[0] == 'R' && line[1] == ' ')
+		return (C_R);
+	else if (line[0] == 'N' && line[1] == 'O')
+		return (C_NO);
+	else if (line[0] == 'S' && line[1] == 'O')
+		return (C_SO);
+	else if (line[0] == 'W' && line[1] == 'E')
+		return (C_WE);
+	else if (line[0] == 'E' && line[1] == 'A')
+		return (C_EA);
+	else if (line[0] == 'S' && line[1] == ' ')
+		return (C_S);
+	else if (line[0] == 'F' && line[1] == ' ')
+		return (C_F);
+	else if (line[0] == 'C' && line[1] == ' ')
+		return (C_C);
+	else if (check_map_component(line))
+		return (C_MAP);
+	return (-1);
 }
 
-
-static int get_move_offset( double th, int key, double amt, double* pdx, double* pdy )
+int is_cub_file(char *path)
 {
-    switch( key ) {
-        case KEY_W:
-        case KEY_S:
-            *pdx = (key==KEY_W ? 1 : -1) * amt * cos(th);
-            *pdy = (key==KEY_W ? 1 : -1) * amt * sin(th);
-            break;
-        case KEY_A:
-        case KEY_D:
-            *pdx = amt * cos(th + (key==KEY_A ? 1 : -1) * M_PI_2);
-            *pdy = amt * sin(th + (key==KEY_A ? 1 : -1) * M_PI_2);
-            break;
-        default: /* invalid */
-            return -1;
-    }
-    return 0;
+	int len;
+	int ret;
+
+	len = ft_strlen(path);
+	ret = 1;
+	if (len >= 4)
+		ret = ft_strncmp(path + len - 4, ".cub", 4);
+	if (ret == 0)
+		return (1);
+	else
+		return (0);
 }
 
-int player_move( t_game* pp, int key, double amt )
+int parse_config(t_game *game,t_config *config, char *path)
 {
-    double dx=0, dy=0;
-    double nx, ny;
+	int type;
+	char *line;
+	int fd;
+	int ret;
+	
+	if (!(is_cub_file(path)))
+		return (exit_error(game, "ERROR\n it is not .cub extension"));
+	if ((fd = open(path, O_RDONLY)) < 0)
+		return (exit_error(game, "ERROR\n wrong path"));
+	ret = 1;
+	while ((ret = get_next_line(fd, &line)) > 0)
+	{
+		if ((type = check_type(line)) == -1)
+			return (exit_error(game, "ERROR\nwrong type"));
+		if (is_blank_line(line) && !(config->map))
+		{
+			free(line);
+			continue;
+		}
+		else if(is_blank_line(line) && config->map && ret)
+			return (exit_error(game, "ERROR\n blank line in the map"));
+		if (!parse_by_type(ret, config, type, line))
+			return (0);
+	}
+	parse_by_type(ret, config, type, line);
+	close(fd);
+	return (1);
+}
+void init(t_game *game)
+{
+	int i;
 
-    if( get_move_offset(pp->th, key, amt, &dx, &dy) < 0 ) {
-        fprintf(stderr,"gameayer_move: invalid key %d\n", key);
-        return -1;
-    }
-    nx = pp->px + dx;
-    ny = pp->py + dy;
+	i = 0;
+	while (i < TEXTURES)
+		game->config.tex[i++].tex_path = NULL;
+	game->config.width = 0;
+	game->config.height = 0;
+	game->config.rows = 0;
+	game->config.colums = 0;
+	game->config.tile = 0;
+	game->config.floor_color = 0;
+	game->config.ceiling_color = 0;
+	game->config.map = NULL;
+	game->config.rotation_speed = .11;
+	game->config.move_speed = .11;
+	game->config.updown_speed = 30;
+	game->config.eyelevel = 0;
+	game->config.fov = 80 * M_PI / 180;
 
-    if( map_get_cell((int)nx, (int)ny) != 0 ) {
-        printf("** bump !\n");
-        return -1;
-    }
-    pp->px = nx;
-    pp->py = ny;
-    return 0;
+	game->player.x = 0;
+	game->player.y = 0;
+	game->player.width = 0;
+	game->player.height = 0;
+	game->player.turndirection = 0;
+	game->player.walkdirection = 0;
+	game->player.walkdirection_lr = 0;
+	game->player.rotationangle = M_PI / 2;
+	game->player.walkspeed = 5;
+	game->player.turnspeed = 3 * (M_PI / 180);
+	game->player.rotationspeed = 0;
+	game->player.eyelevel = 0;
 }
 
-int key_press(int key, t_game *game)
+void free_game(t_game *game)
 {
-        printf("test1\n");
-        if( key < 0 || key == KEY_ESC ) {   /* quit */
-            printf("test1\n");
-            exit(0);
-        }
-        if( key == KEY_LEFT || key == KEY_RIGHT ) {
-                printf("test2`\n");
-            player_rotate(game, ROT_UNIT * (key==KEY_LEFT ? 1 : -1));
-            render(game);
-        }
-        else if( key == KEY_W || key == KEY_A || key == KEY_S || key == KEY_D ) {
-                printf("test3\n");
-            if( player_move(game, key, MOVE_UNIT) == 0 ) {
-                render(game);
-            }
-        }
-        printf("test4\n");
-        return 0;
+	int i;
+
+	i = 0;
+	while (i < game->config.rows)
+	{
+		if (game->config.map[i])
+			free(game->config.map[i]);
+		i++;
+	}
+	free(game->config.map);
+	i = 0;
+	while (i < TEXTURES - 3)
+	{
+		if (game->config.tex[i].texture)
+			free(game->config.tex[i].texture);
+		i++;
+	}
 }
 
-int        draw_loop(t_game *game)
+int exit_error(t_game *game, char *err_str)
 {
-    mlx_put_image_to_window(game->mlx, game->win, game->img.img, 0, 0);
-    return (0);
+	if (err_str)
+		write(1, err_str, ft_strlen(err_str));
+	exit(EXIT_FAILURE);
+	free_game(game);
+	return (EXIT_FAILURE);
 }
 
-int main( int ac, char** av )
+int main(int ac, char **av)
 {
-    if( ac != 4 ) {
-        fprintf(stderr,"usage: %s x y th(deg)\n", av[0]);
-        exit(1);
-    }
-    t_game	game;
-	game.mlx = mlx_init();
-    game.win = mlx_new_window(game.mlx, SX, SY, "cub3D");
-
-    double px, py, th;
-    game.px = atof(av[1]);
-    game.py = atof(av[2]);
-    game.th = deg2rad(atof(av[3]));
-
-    game.img.img = mlx_new_image(game.mlx, SX, SY);
-    game.img.data = (int *)mlx_get_data_addr(game.img.img, &game.img.bpp, &game.img.line_size, &game.img.endian);
-
-    //
-
-	// for( int x=0; x<SX; x++ ) {
-    //     dir_t wdir;
-    //     double wdist = cast_single_ray(x, game.px, game.py, game.th, &wdir);
-	// 	draw_wall(&game, wdist, x, 0xFF0000);  
-    // }
-    render(&game);
-
-	mlx_hook(game.win, 2, 1L << 0, key_press, &game);
-    mlx_loop_hook(game.mlx, draw_loop, &game);
-
-
-    mlx_loop(game.mlx);
-    return (0);
+	t_game game;
+	
+	if (!(ac == 2 || (ac == 3 && !ft_strncmp(av[2], "--save", 6))))
+		return (exit_error(&game, "ERROR\nargument error"));
+	init(&game);
+	if (!parse_config(&game, &game.config, av[1]))
+		exit_error(&game, "ERROR\nparsed map error");
+	if (!check_map_validation())
+		exit_error(&game, "ERROR\nmap is not valid");
+	if ()
 }

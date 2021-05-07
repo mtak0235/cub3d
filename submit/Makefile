@@ -1,86 +1,66 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/05/06 11:07:34 by mtak              #+#    #+#              #
+#    Updated: 2021/05/06 11:29:01 by mtak             ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
 NAME	= cub3d
 
-LIB = lib/
-
-HEADER	= -I./includes
-
-CFLAG	= #-Wall -Wextra -Werror 
-
-CFLAGS = -D NUM_THREADS=$(NUM_THREADS)
-
-FLAGS = -L $(LIB)libft -lft
-
-MACOS_MACRO = -D MACOS
-
-LINUX_MACRO = -D LINUX
-
-MACOS_FLAGS = -L $(LIB)mlx-mac -lmlx -framework OpenGL -framework AppKit 
-
-LINUX_FLAGS = -L $(LIB)minilibx-linux -lmlx -lm -lX11 -lXext -lbsd
-
-
-UNAME := $(shell uname)
-
-ifeq ($(UNAME),Darwin)
-	NUM_THREADS = $(shell sysctl -n hw.ncpu)
-	CFLAGS += $(MACOS_MACRO)
-	FLAGS += $(MACOS_FLAGS)
-	CHOICE = $(LIB)mlx-mac
-endif
-ifeq ($(UNAME),Linux)
-	NUM_THREADS = $(shell nproc --all)
-	CFLAGS += $(LINUX_MACRO)
-	FLAGS += $(LINUX_FLAGS)
-	CHOICE = minilibx-linux
-endif
-
 SRC_NAME = main.c \
-
+		   
 SRC_PATH = ./src
 SRC = $(addprefix $(SRC_PATH)/, $(SRC_NAME))
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 OBJ_PATH = ./obj
 OBJ = $(addprefix $(OBJ_PATH)/, $(OBJ_NAME))
-
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
 	mkdir $(OBJ_PATH) 2> /dev/null || true
 	gcc $(CFLAG) $(HEADER) -o $@ -c $<
 
-BSRC_NAME = main_bonus\
+SCREENSHOT = screenshot.bmp
 
-BSRC_PATH = ./bonus
-BSRC = $(addprefix $(SRC_PATH)/, $(SRC_NAME))
+HEADER	= -I./includes
 
-BOBJ_NAME = $(BSRC_NAME:.c=.o)
-BOBJ_PATH = ./bobj
-BOBJ = $(addprefix $(BOBJ_PATH)/, $(BOBJ_NAME))
+CFLAG	=# -Wall -Wextra -Werror 
 
-$(BOBJ_PATH)/%.o: $(BSRC_PATH)/%.c
-	mkdir $(BOBJ_PATH) 2> /dev/null || true
-	gcc $(CFLAG) $(HEADER) -o $@ -c $<
+LIBFT	= libft.a
 
-all	: ${NAME}
+LIBMLX	= libmlx.a
 
-$(NAME)	: $(OBJ)
-	make -C $(LIB)libft
-	make -C $(LIB)$(CHOICE)
-	gcc -o $(NAME) $(OBJ) $(HEADER) $(CFLAGS) $(CFLAG) $(FLAGS)
+MLX	= -framework OpenGL -framework Appkit
 
-bonus: $(BOBJ)
-	make -C $(LIB)libft
-	make -C $(LIB)$(CHOICE)
-	gcc -o $(NAME) $(BOBJ) $(HEADER) $(CFLAGS) $(CFLAG) $(FLAGS)
+LIBS	= -L./lib/libft -lft -L./lib/mlx -lmlx
+
+RM	= rm -rf
+
+all	: $(NAME)
+
+$(NAME)	: $(OBJ) $(LIBFT) $(LIBMLX)
+	gcc -o $(NAME) $(OBJ) $(HEADER) $(CFLAG) $(LIBS) $(MLX)
+
+$(LIBFT):
+	$(MAKE) -C lib/libft
+
+$(LIBMLX):
+	$(MAKE) -C lib/mlx
 
 clean	:
-	make -C $(LIB)libft clean
-	make -C $(LIB)$(CHOICE) clean
-	rm -rf $(OBJ_PATH) $(BOBJ_PATH) $(SCREENSHOT)
+	$(MAKE) -C lib/libft clean
+	$(MAKE) -C lib/mlx clean
+	rm -rf $(OBJ_PATH) $(SCREENSHOT)
 
 fclean	: clean
-	make -C $(LIB)libft fclean
+	$(MAKE) -C lib/libft fclean
 	rm -rf $(NAME)
 
-re	: fclean all
+re		: fclean all
 
 .PHONY: all clean fclean re
