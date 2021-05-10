@@ -6,15 +6,30 @@
 #    By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/06 11:07:34 by mtak              #+#    #+#              #
-#    Updated: 2021/05/06 11:29:01 by mtak             ###   ########.fr        #
+#    Updated: 2021/05/10 23:57:05 by mtak             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
 
 NAME	= cub3d
 
 SRC_NAME = main.c \
-		   
+		   init.c \
+		   get_next_line.c \
+		   keys.c\
+		   pos.c \
+		   parse1.c\
+		   parse2.c \
+		   move.c \
+		   draw.c \
+		   texture.c \
+		   raycasting.c \
+		   sprite.c \
+		   mapcheck.c \
+		   render.c \
+		   utils.c \
+		   utils2.c \
+		   screenshot.c 
+
 SRC_PATH = ./src
 SRC = $(addprefix $(SRC_PATH)/, $(SRC_NAME))
 
