@@ -6,9 +6,3 @@ my first raycasting engine
 $ make
 $ ./cub3d ./maps/basic.cub
 ```
-
-##bonus mode
-```shell
-$ make bonus
-$./cub3d ./map/lol.cub
-```
