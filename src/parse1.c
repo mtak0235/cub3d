@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:20 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:59:09 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/11 14:38:24 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	g_fd;
 int	g_ret;
 
-static int	is_cub_file(char const *conf_path)
+static int		is_cub_file(char const *conf_path)
 {
 	int ret;
 	int len;
@@ -27,7 +27,7 @@ static int	is_cub_file(char const *conf_path)
 	return (ret == 0 ? 1 : 0);
 }
 
-static int	check_map_component(char *line)
+static int		check_map_component(char *line)
 {
 	int i;
 
@@ -42,7 +42,7 @@ static int	check_map_component(char *line)
 	return (1);
 }
 
-static int	check_type(char *line)
+static int		check_type(char *line)
 {
 	if (line[0] == 'R' && line[1] == ' ')
 		return (C_R);
@@ -65,7 +65,7 @@ static int	check_type(char *line)
 	return (-1);
 }
 
-static int	is_blank_line(char *line)
+static int		is_blank_line(char *line)
 {
 	int		i;
 
@@ -79,7 +79,7 @@ static int	is_blank_line(char *line)
 	return (1);
 }
 
-int		parse_config(t_game *game, t_config *config, char const *conf_path)
+int				parse_config(t_game *game, t_config *c, char const *conf_path)
 {
 	int				type;
 	char			*line;
@@ -93,17 +93,17 @@ int		parse_config(t_game *game, t_config *config, char const *conf_path)
 	{
 		if ((type = check_type(line)) == -1)
 			return (exit_error(game, EXIT_FAILURE, "ERROR\nwrong type"));
-		if (is_blank_line(line) && !(config->map))
+		if (is_blank_line(line) && !(c->map))
 		{
 			free(line);
 			continue;
 		}
-		else if (is_blank_line(line) && config->map && g_ret)
+		else if (is_blank_line(line) && c->map && g_ret)
 			return (exit_error(game, EXIT_FAILURE, "blank line in the map"));
-		if (!parse_by_type(g_ret, config, type, line))
+		if (!parse_by_type(g_ret, c, type, line))
 			return (0);
 	}
-	parse_by_type(g_ret, config, type, line);
+	parse_by_type(g_ret, c, type, line);
 	close(g_fd);
 	return (1);
 }
