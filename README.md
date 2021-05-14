@@ -4,8 +4,7 @@ my first raycasting engine
 ## basic mode
 ```shell
 $ make
-$ ./cub3d ./maps/basic.cub
-```
+
 
 ##bonus mode
 ```shell
@@ -21,3 +20,4 @@ $./cub3d ./map/lol.cub
 *  
 
 * 채용 사이트 쇼핑해서 오늘 멘토링
+
