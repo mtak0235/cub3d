@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:53:42 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:53:51 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/15 19:38:17 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <math.h>
 # include "mlx.h"
 # include "libft.h"
+#include "mlx_custom.h"
 
 # define FALSE					0
 # define TRUE					1
@@ -187,6 +188,7 @@ typedef struct	s_config
 	double		fov;
 	int			tuna;
 	int			t_num;
+	int			i;
 }				t_config;
 
 typedef struct	s_game
@@ -261,16 +263,17 @@ void			copy_pos(t_pos *pos, t_pos *org);
 
 int				parse_config\
 					(t_game *game, t_config *config, char const *conf_path);
-int				parse_by_type(int ret, t_config *config, int type, char *line);
+int				parse_by_type(int ret, t_game *game, int type, char *line);
+
 
 /*
 ** move.c
 */
 
 int				is_wall(double x, double y, t_game *game);
-int				is_sprite(double x, double y, t_game *game);
 double			normalize_angle(double angle);
 void			move_player(t_game *game);
+int				is_sprite(double x, double y, t_game *game);
 
 /*
 ** sprite.c

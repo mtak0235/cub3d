@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:08 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:55:12 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/15 19:39:17 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int		is_wall(double x, double y, t_game *game)
 {
 	int gridx;
 	int gridy;
-
+	
 	if (x < 0 || x > game->config.width || y < 0 || y > game->config.height)
 		return (1);
 	gridx = (int)floor(x / game->config.tile);
@@ -28,6 +28,9 @@ int		is_wall(double x, double y, t_game *game)
 			game->config.map[gridy][gridx] == ' ' ||
 			game->config.map[gridy][gridx] == '\0')
 		return (1);
+	// else if (game->config.map[(int)floor(++y / game->config.tile)][(int)floor(++x / game->config.tile)] == ' '||
+	// 	game->config.map[(int)floor(x / game->config.tile)][(int)floor(y / game->config.tile)] == '1')
+	// 	return (1);
 	return (0);
 }
 
@@ -79,7 +82,7 @@ void	move_player(t_game *g)
 	else
 		set_pos(&new, g->player.x + cos(g->player.rotationangle) * move_step,
 				g->player.y + sin(g->player.rotationangle) * move_step);
-	if (!is_wall(new.x, new.y, g) && !is_sprite(new.x, new.y, g))
+	if (!is_wall(new.x, new.y, g))
 	{
 		g->player.x = new.x;
 		g->player.y = new.y;

@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/11 14:35:43 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/15 16:46:30 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	init_config(t_game *game)
 	game->config.updown_speed = 30;
 	game->config.eyelevel = 0;
 	game->config.fov = 80 * M_PI / 180;
+	game->config.i = 0;
 }
 
 void	init_game(t_game *game)

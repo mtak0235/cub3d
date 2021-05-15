@@ -6,34 +6,35 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:55:30 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/15 19:06:30 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-static int	parse_resolution(t_config *config, char *line)
+static int	parse_resolution(t_game *game, char *line)
 {
 	int		i;
-	int		width;
-	int		height;
+	int		max_width;
+	int		max_height;
 
 	i = 0;
-	width = 0;
-	height = 0;
 	while (is_upper(line[i]))
 		i++;
 	while (is_space(line[i]))
 		i++;
 	while (ft_isdigit(line[i]))
-		width = width * 10 + line[i++] - 48;
+		game->config.width = game->config.width * 10 + line[i++] - 48;
 	while (is_space(line[i]))
 		i++;
 	while (ft_isdigit(line[i]))
-		height = height * 10 + line[i++] - 48;
-	config->width = width;
-	config->height = height;
-	return (1);
+		game->config.height = game->config.height * 10 + line[i++] - 48;
+	if (i != ft_strlen(line))
+		return (0);
+	mlx_get_screen_size(game->mlx, &max_width, &max_height);
+	game->config.width = (game->config.width > max_width) ? max_width : game->config.width;
+	game->config.height = (game->config.height > max_height) ? max_height: game->config.height;
+	return (1); 
 }
 
 static char	*parse_path(char *line)
@@ -70,9 +71,13 @@ static int	parse_color(char *line)
 	{
 		while (line[i] && ft_isdigit(line[i]))
 			colors[j] = colors[j] * 10 + line[i++] - 48;
-		if ((!ft_strchr(",", line[i]) && line[i] != '\0') || colors[j] > 255)
+		if (colors[j] > 255 || colors[j] < 0)
 			return (-1);
+		while (is_space(line[i]))
+			i++;
 		ft_strchr(",", line[i]) ? i++ : 0;
+		while (is_space(line[i]))
+			i++;
 	}
 	color = colors[0] * 256 * 256 + colors[1] * 256 + colors[2];
 	return (color);
@@ -83,8 +88,9 @@ static int	parse_map(t_config *config, char *temp)
 	int		i;
 	int		j;
 
-	if (!(config->map = ft_split(temp, '\n')))
+	if (!(config->map = ft_split(temp, '\n'))) /* 여기가 바로 c->map != 0이 할당되는 곳이다*/
 		return (0);
+	config->i = 1;
 	free(temp);
 	i = -1;
 	j = 0;
@@ -97,30 +103,31 @@ static int	parse_map(t_config *config, char *temp)
 	return (1);
 }
 
-int			parse_by_type(int ret, t_config *c, int tp, char *line)
+int			parse_by_type(int ret, t_game *game, int tp, char *line)
 {
 	static char *temp = "";
 
 	if (tp == C_R)
 	{
-		if (!parse_resolution(c, line))
+		if (!parse_resolution(game, line))
 			return (free_line(line, 0));
 	}
 	else if (tp >= C_NO && tp <= C_S)
 	{
-		if (c->tex[tp].tex_path || !(c->tex[tp].tex_path = parse_path(line)))
+		if (game->config.tex[tp].tex_path || !(game->config.tex[tp].tex_path = parse_path(line)))
 			return (free_line(line, 0));
 	}
 	else if (tp == C_F || tp == C_C)
 	{
-		if ((tp == C_F && (c->floor_color = parse_color(line)) == -1) ||
-		(tp == C_C && (c->ceiling_color = parse_color(line)) == -1))
+		if ((tp == C_F && (game->config.floor_color = parse_color(line)) == -1) ||
+		(tp == C_C && (game->config.ceiling_color = parse_color(line)) == -1))
 			return (free_line(line, 0));
 	}
-	else
+	else 
 	{
 		temp = update_temp(temp, line);
-		if (ret == 0 && !parse_map(c, temp))
+		game->config.i = 1;
+		if (ret == 0 && !parse_map(&game->config, temp)) 
 			return (free_line(line, 0));
 	}
 	return (free_line(line, 1));

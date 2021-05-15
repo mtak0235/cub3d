@@ -6,7 +6,7 @@
 #    By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/06 11:07:34 by mtak              #+#    #+#              #
-#    Updated: 2021/05/10 23:57:05 by mtak             ###   ########.fr        #
+#    Updated: 2021/05/15 15:16:42 by mtak             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,6 +65,7 @@ $(LIBFT):
 	$(MAKE) -C lib/libft
 
 $(LIBMLX):
+	$(MAKE) -C lib/mlx_custom
 	$(MAKE) -C lib/mlx
 
 clean	:
