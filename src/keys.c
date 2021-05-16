@@ -60,10 +60,6 @@ static int	key_release_bonus(int key_code, t_game *game)
 		game->player.eyelevel = 0;
 	else if (key_code == KEY_DOWN)
 		game->player.eyelevel = 0;
-	else if (key_code == KEY_MINUS)
-		game->player.walkspeed -= 0;
-	else if (key_code == KEY_PLUS)
-		game->player.walkspeed += 0;
 	return (0);
 }
 
