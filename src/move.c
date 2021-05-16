@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:08 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/15 19:39:17 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/16 17:56:18 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	move_player(t_game *g)
 	else
 		set_pos(&new, g->player.x + cos(g->player.rotationangle) * move_step,
 				g->player.y + sin(g->player.rotationangle) * move_step);
-	if (!is_wall(new.x, new.y, g) && !is_sprite(new.x, new.y, g)
+	if (!is_wall(new.x, new.y, g))
 	{
 		g->player.x = new.x;
 		g->player.y = new.y;
