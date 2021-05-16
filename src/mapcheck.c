@@ -25,6 +25,12 @@ int		check_space_around_position(t_game *game, int i, int j)
 	else if ((int)ft_strlen(game->config.map[i + 1]) <= j
 	|| game->config.map[i + 1][j] == ' ' || game->config.map[i + 1][j] == '\0')
 		return (0);
+	else if (game->config.map[i + 1][j + 1] == ' ' 
+	|| game->config.map[i + 1][j + 1] == '\0')
+		return (0);
+	else if (game->config.map[i - 1][j + 1] == ' ' 
+	|| game->config.map[i - 1][j + 1] == '\0')
+		return (0);
 	return (1);
 }
 
