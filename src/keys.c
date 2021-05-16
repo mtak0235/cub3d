@@ -18,10 +18,6 @@ static int	key_press_bonus(int key_code, t_game *game)
 		game->player.eyelevel = 1;
 	else if (key_code == KEY_DOWN)
 		game->player.eyelevel = -1;
-	else if (key_code == KEY_MINUS)
-		game->player.walkspeed > 1 ? game->player.walkspeed -= 1 : 0;
-	else if (key_code == KEY_PLUS)
-		game->player.walkspeed < 10 ? game->player.walkspeed += 1 : 0;
 	return (0);
 }
 
