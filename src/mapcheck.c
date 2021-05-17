@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:51 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:55:01 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 13:08:06 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,17 @@ int		check_space_around_position(t_game *game, int i, int j)
 	else if ((int)ft_strlen(game->config.map[i + 1]) <= j
 	|| game->config.map[i + 1][j] == ' ' || game->config.map[i + 1][j] == '\0')
 		return (0);
-	else if (game->config.map[i + 1][j + 1] == ' ' 
+	else if (game->config.map[i + 1][j + 1] == ' '
 	|| game->config.map[i + 1][j + 1] == '\0')
 		return (0);
-	else if (game->config.map[i - 1][j + 1] == ' ' 
+	else if (game->config.map[i - 1][j + 1] == ' '
 	|| game->config.map[i - 1][j + 1] == '\0')
+		return (0);
+	else if (game->config.map[i - 1][j - 1] == ' '
+	|| game->config.map[i - 1][j - 1] == '\0')
+		return (0);
+	else if (game->config.map[i + 1][j - 1] == ' '
+	|| game->config.map[i + 1][j - 1] == '\0')
 		return (0);
 	return (1);
 }

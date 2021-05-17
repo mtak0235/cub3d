@@ -6,11 +6,11 @@
 #    By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/06 11:07:34 by mtak              #+#    #+#              #
-#    Updated: 2021/05/15 15:16:42 by mtak             ###   ########.fr        #
+#    Updated: 2021/05/17 15:48:49 by mtak             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= cub3d
+NAME	= cub3D
 
 SRC_NAME = main.c \
 		   init.c \
@@ -19,6 +19,7 @@ SRC_NAME = main.c \
 		   pos.c \
 		   parse1.c\
 		   parse2.c \
+		   parse3.c\
 		   move.c \
 		   draw.c \
 		   texture.c \
@@ -44,7 +45,7 @@ SCREENSHOT = screenshot.bmp
 
 HEADER	= -I./includes
 
-CFLAG	=# -Wall -Wextra -Werror 
+CFLAG	= -Wall -Wextra -Werror 
 
 LIBFT	= libft.a
 

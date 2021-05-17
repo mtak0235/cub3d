@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:53:42 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/15 19:38:17 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 19:43:30 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@
 # define X_EVENT_KEY_EXIT		17
 
 # define NSEW					"NSEW"
-# define MOVESPEED				2
+# define MOVESPEED				100
 
 # define SPRITE					2
 # define TUNA					3
@@ -73,7 +73,7 @@
 # define TEX_WEST				2
 # define TEX_EAST				3
 # define TEX_SPRITE				4
-# define TEX_TUNA				5
+# define TEX_T					5
 # define TEX_LB					6
 # define TEX_GC					7
 
@@ -95,109 +95,109 @@
 
 typedef struct	s_pos
 {
-	double		x;
-	double		y;
+	double					x;
+	double					y;
 }				t_pos;
 
 typedef struct	s_index
 {
-	int			x;
-	int			y;
+	int						x;
+	int						y;
 }				t_index;
 
 typedef struct	s_img
 {
-	void		*img;
-	int			*data;
-	int			bpp;
-	int			size_l;
-	int			endian;
-	int			img_width;
-	int			img_height;
+	void					*img;
+	int						*data;
+	int						bpp;
+	int						size_l;
+	int						endian;
+	int						img_width;
+	int						img_height;
 }				t_img;
 
 typedef struct	s_sprite
 {
-	int			content;
-	t_pos		verthit;
-	t_pos		horzhit;
-	t_pos		hit;
-	t_pos		mappos;
-	t_pos		mapcenter;
-	double		angle;
-	double		min_angle;
-	double		max_angle;
-	double		distance;
-	double		height;
-	int			tex_x;
+	int						content;
+	t_pos					verthit;
+	t_pos					horzhit;
+	t_pos					hit;
+	t_pos					mappos;
+	t_pos					mapcenter;
+	double					angle;
+	double					min_angle;
+	double					max_angle;
+	double					distance;
+	double					height;
+	int						tex_x;
 }				t_sprite;
 
 typedef struct	s_player
 {
-	float		x;
-	float		y;
-	float		width;
-	float		height;
-	int			turndirection;
-	int			walkdirection;
-	int			walkdirection_lr;
-	float		rotationangle;
-	float		walkspeed;
-	float		turnspeed;
-	double		rotationspeed;
-	double		eyelevel;
+	float					x;
+	float					y;
+	float					width;
+	float					height;
+	int						turndirection;
+	int						walkdirection;
+	int						walkdirection_lr;
+	float					rotationangle;
+	float					walkspeed;
+	float					turnspeed;
+	double					rotationspeed;
+	double					eyelevel;
 }				t_player;
 
 typedef struct	s_ray
 {
-	double		rayangle;
-	double		distance;
-	t_pos		wallhit;
-	t_sprite	sprite;
-	int			washitvertical;
-	int			isup;
-	int			isdown;
-	int			isleft;
-	int			isright;
-	int			wallhitcontent;
+	double					rayangle;
+	double					distance;
+	t_pos					wallhit;
+	t_sprite				sprite;
+	int						washitvertical;
+	int						isup;
+	int						isdown;
+	int						isleft;
+	int						isright;
+	int						wallhitcontent;
 }				t_ray;
 
 typedef struct	s_tex
 {
-	char		*tex_path;
-	int			*texture;
-	double		width;
-	double		height;
+	char					*tex_path;
+	int						*texture;
+	double					width;
+	double					height;
 }				t_tex;
 
 typedef struct	s_config
 {
-	int			width;
-	int			height;
-	int			rows;
-	int			colums;
-	double		tile;
-	t_tex		tex[TEXTURES];
-	int			floor_color;
-	int			ceiling_color;
-	char		**map;
-	double		rotation_speed;
-	double		updown_speed;
-	double		move_speed;
-	double		eyelevel;
-	double		fov;
-	int			tuna;
-	int			t_num;
-	int			i;
+	unsigned int			width;
+	unsigned int			height;
+	int						rows;
+	int						colums;
+	double					tile;
+	t_tex					tex[TEXTURES];
+	int						floor_color;
+	int						ceiling_color;
+	char					**map;
+	double					rotation_speed;
+	double					updown_speed;
+	double					move_speed;
+	double					eyelevel;
+	double					fov;
+	int						tuna;
+	int						t_num;
+	int						i;
 }				t_config;
 
 typedef struct	s_game
 {
-	t_config	config;
-	void		*mlx;
-	void		*win;
-	t_img		img;
-	t_player	player;
+	t_config				config;
+	void					*mlx;
+	void					*win;
+	t_img					img;
+	t_player				player;
 }				t_game;
 
 /*
@@ -258,13 +258,19 @@ void			set_pos(t_pos *pos, double x, double y);
 void			copy_pos(t_pos *pos, t_pos *org);
 
 /*
-** parse1.c parse2.c
+** parse1.c parse2.c parse3.c
 */
 
 int				parse_config\
 					(t_game *game, t_config *config, char const *conf_path);
 int				parse_by_type(int ret, t_game *game, int type, char *line);
-
+int				parse_color(char *line);
+int				type_c_fc(t_game *game, char *line, int tp);
+int				type_c_d(t_game *game, char *line, int tp);
+char			*parse_path(char *line);
+void 			trim_comma(char *line, int *i, int *j);
+int				is_valid_color(int *j, int colors[]);
+int				space_pass(char *line, int *i);
 
 /*
 ** move.c

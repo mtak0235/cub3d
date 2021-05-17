@@ -6,13 +6,13 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:51 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/10 23:55:54 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 19:38:31 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int		get_tex_color(t_tex *tex, int type, t_pos *pos)
+int			get_tex_color(t_tex *tex, int type, t_pos *pos)
 {
 	if (pos->x >= 0 && pos->x < tex[type].width &&
 			pos->y >= 0 && pos->y < tex[type].height)
@@ -23,7 +23,7 @@ int		get_tex_color(t_tex *tex, int type, t_pos *pos)
 	return (0x0);
 }
 
-void	render_a_stripe(t_game *game, t_config c, t_ray *ray, int rayid)
+void		render_a_stripe(t_game *game, t_config c, t_ray *ray, int rayid)
 {
 	int		i;
 	int		color;
@@ -52,23 +52,23 @@ void	render_a_stripe(t_game *game, t_config c, t_ray *ray, int rayid)
 	}
 }
 
-void	render_ceiling(t_game *game)
+void		render_ceiling(t_game *game)
 {
-	t_pos a1;
-	t_pos a2;
+	t_pos	a1;
+	t_pos	a2;
 
 	set_pos(&a1, 0, game->config.height / 2 + game->config.eyelevel);
 	set_pos(&a2, game->config.width, game->config.height);
-	draw_rectangle(game, a1, a2, game->config.ceiling_color);
+	draw_rectangle(game, a1, a2, game->config.floor_color);
 }
 
-void	render_floor(t_game *game)
+void		render_floor(t_game *game)
 {
-	t_pos a1;
-	t_pos a2;
+	t_pos	a1;
+	t_pos	a2;
 
 	set_pos(&a1, 0, 0);
 	set_pos(&a2, game->config.width,
 			game->config.height / 2 + game->config.eyelevel);
-	draw_rectangle(game, a1, a2, game->config.floor_color);
+	draw_rectangle(game, a1, a2, game->config.ceiling_color);
 }

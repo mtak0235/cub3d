@@ -6,17 +6,37 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:08 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/16 17:56:18 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 19:44:41 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int		is_wall(double x, double y, t_game *game)
+int			check_diagonal(t_game *game, double x, double y)
 {
-	int gridx;
-	int gridy;
-	
+	double	xx;
+	double	yy;
+
+	xx = x;
+	yy = y;
+	if (game->config.map[(int)floor(--y / game->config.tile)]
+	[(int)floor(x / game->config.tile)] == '1' &&
+		game->config.map[(int)floor(++y / game->config.tile)]
+		[(int)floor(--x / game->config.tile)] == '1')
+		return (1);
+	if (game->config.map[(int)floor(yy / game->config.tile)]
+		[(int)floor(--xx / game->config.tile)] == '1' &&
+		game->config.map[(int)floor(--yy / game->config.tile)]
+		[(int)floor(xx / game->config.tile)] == '1')
+		return (1);
+	return (0);
+}
+
+int			is_wall(double x, double y, t_game *game)
+{
+	int		gridx;
+	int		gridy;
+
 	if (x < 0 || x > game->config.width || y < 0 || y > game->config.height)
 		return (1);
 	gridx = (int)floor(x / game->config.tile);
@@ -28,16 +48,15 @@ int		is_wall(double x, double y, t_game *game)
 			game->config.map[gridy][gridx] == ' ' ||
 			game->config.map[gridy][gridx] == '\0')
 		return (1);
-	// else if (game->config.map[(int)floor(++y / game->config.tile)][(int)floor(++x / game->config.tile)] == ' '||
-	// 	game->config.map[(int)floor(x / game->config.tile)][(int)floor(y / game->config.tile)] == '1')
-	// 	return (1);
+	else if (check_diagonal(game, x, y))
+		return (1);
 	return (0);
 }
 
-int		is_sprite(double x, double y, t_game *game)
+int			is_sprite(double x, double y, t_game *game)
 {
-	int gridx;
-	int gridy;
+	int		gridx;
+	int		gridy;
 
 	if (x < 0 || x > game->config.width || y < 0 || y > game->config.height)
 		return (0);
@@ -51,7 +70,7 @@ int		is_sprite(double x, double y, t_game *game)
 	return (0);
 }
 
-double	normalize_angle(double angle)
+double		normalize_angle(double angle)
 {
 	while (angle >= 2 * M_PI)
 		angle -= 2 * M_PI;
@@ -60,12 +79,12 @@ double	normalize_angle(double angle)
 	return (angle);
 }
 
-void	move_player(t_game *g)
+void		move_player(t_game *g)
 {
-	float	move_angle;
-	float	move_step;
-	t_pos	new;
-	double	newlevel;
+	float		move_angle;
+	float		move_step;
+	t_pos		new;
+	double		newlevel;
 
 	newlevel = g->config.eyelevel + g->player.eyelevel * g->config.updown_speed;
 	if (newlevel < g->config.height / 4 && newlevel > -g->config.height / 4)

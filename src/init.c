@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/15 16:46:30 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 18:06:30 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void	init_player(t_game *game)
 	game->player.walkdirection = 0;
 	game->player.walkdirection_lr = 0;
 	game->player.rotationangle = M_PI / 2;
-	game->player.walkspeed = 5;
-	game->player.turnspeed = 3 * (M_PI / 180);
+	game->player.walkspeed = 20;
+	game->player.turnspeed = 7 * (M_PI / 180);
 	game->player.rotationspeed = 0;
 	game->player.eyelevel = 0;
 }

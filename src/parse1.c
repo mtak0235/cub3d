@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:20 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/15 18:40:01 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/17 19:19:04 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,14 +93,14 @@ int				parse_config(t_game *game, t_config *c, char const *conf_path)
 	{
 		if ((type = check_type(line)) == -1)
 			return (exit_error(game, EXIT_FAILURE, "ERROR\nWRONG TYPE ON MAP"));
-		if (is_blank_line(line) && !(game->config.i) ) 
+		if (is_blank_line(line) && !(c->i))
 		{
 			free(line);
 			continue;
 		}
-		else if (is_blank_line(line) && game->config.i && g_ret)
+		else if (is_blank_line(line) && c->i && g_ret)
 			return (exit_error(game, EXIT_FAILURE, "blank line in the map"));
-		if (!parse_by_type(g_ret, game, type, line)) 
+		if (!parse_by_type(g_ret, game, type, line))
 			return (0);
 	}
 	parse_by_type(g_ret, game, type, line);
