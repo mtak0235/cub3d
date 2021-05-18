@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:58 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/17 15:57:17 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/18 10:50:01 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	get_color(t_game *game, int x, int y)
 static int	write_bmp_data(int fd, int pad, t_game *game)
 {
 	int							i;
-	unsigned int				j;
+	int							j;
 	int							color;
 	unsigned char				zero[3];
 

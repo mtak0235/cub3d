@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/17 18:06:30 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/18 10:51:18 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	init_config(t_game *game)
 	game->config.map = NULL;
 	game->config.rotation_speed = .11;
 	game->config.move_speed = .11;
-	game->config.updown_speed = 30;
+	game->config.updown_speed = 50;
 	game->config.eyelevel = 0;
 	game->config.fov = 80 * M_PI / 180;
 	game->config.i = 0;

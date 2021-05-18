@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:53:42 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/17 19:43:30 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/18 10:49:30 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,8 @@ typedef struct	s_tex
 
 typedef struct	s_config
 {
-	unsigned int			width;
-	unsigned int			height;
+	int						width;
+	int						height;
 	int						rows;
 	int						colums;
 	double					tile;

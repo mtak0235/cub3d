@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/17 20:03:12 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/18 10:49:07 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ static int		parse_resolution(t_game *game, char *line)
 	if (i != (int)ft_strlen(line))
 		return (0);
 	mlx_get_screen_size(game->mlx, &mw, &mh);
-	game->config.width = (game->config.width > (unsigned int)mw)
+	game->config.width = (game->config.width > mw)
 	? mw : game->config.width;
-	game->config.height = (game->config.height > (unsigned int)mh)
+	game->config.height = (game->config.height > mh)
 	? mh : game->config.height;
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:45 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/17 19:32:53 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/18 10:49:47 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		exit_error(t_game *game, int code, char const *str)
 void	cast_all_rays(t_game *game)
 {
 	t_ray					ray[game->config.width];
-	unsigned int			id;
+	int			id;
 	double					rayangle;
 
 	rayangle = game->player.rotationangle - (game->config.fov / 2);
