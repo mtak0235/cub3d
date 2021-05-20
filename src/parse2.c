@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:55:27 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/18 10:49:07 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/20 13:10:39 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,10 @@ static int		parse_resolution(t_game *game, char *line)
 	i = 0;
 	while (is_upper(line[i]))
 		i++;
-	while (is_space(line[i]))
-		i++;
-	while (ft_isdigit(line[i]))
-		game->config.width = game->config.width * 10 + line[i++] - 48;
-	while (is_space(line[i]))
-		i++;
-	while (ft_isdigit(line[i]))
-		game->config.height = game->config.height * 10 + line[i++] - 48;
+	if ((game->config.width = ft_atoi(&line[i], &i)) == -1)
+		return (0);
+	if ((game->config.height = ft_atoi(&line[i], &i)) == -1)
+		return (0);
 	if (i != (int)ft_strlen(line))
 		return (0);
 	mlx_get_screen_size(game->mlx, &mw, &mh);
