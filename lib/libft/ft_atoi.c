@@ -6,27 +6,29 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 17:01:31 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/20 13:16:26 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/21 11:34:22 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "stdio.h"
 
-static void	pass_space(const char *str, int *i)
+static void	pass_space(char **str, int *i)
 {
-	while (*str == 32 || (9 <= *str && *str <= 13))
+
+	while (**str == 32 || (9 <= **str && **str <= 13))
 	{
-		str++;
+		(*str)++;
 		(*i)++;
 	}
 }
 
-int			ft_atoi(const char *str, int *i)
+int			ft_atoi(char *str, int *i)
 {
-	int		sign;
-	size_t	num;
+	int				sign;
+	unsigned int	num;
 
-	pass_space(str, i);
+	pass_space(&str, i);
 	sign = 1;
 	if (*str == '+' || *str == '-')
 	{
@@ -43,9 +45,9 @@ int			ft_atoi(const char *str, int *i)
 		str++;
 		(*i)++;
 	}
-	if (num > LLONG_MAX - 1 && sign == 1)
-		return (-1);
-	if (num > LLONG_MAX && sign == -1)
-		return (-1);
+	if (num > INT_MAX - 1 && sign == -1)
+		return (0);
+	if (num > INT_MAX && sign == -1)
+		return (0);
 	return (sign * num);
 }

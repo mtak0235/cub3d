@@ -6,11 +6,9 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:54:04 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/20 13:17:03 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/21 11:19:28 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 
 #ifndef LIBFT_H
 # define LIBFT_H
@@ -19,7 +17,6 @@
 # include <limits.h>
 # include <stdlib.h>
 # include <unistd.h>
-
 
 void			*ft_memset(void *s, int c, size_t len);
 void			ft_bzero(void *s, size_t n);
@@ -37,7 +34,7 @@ char			*ft_strchr(const char *s, int c);
 char			*ft_strrchr(const char *s, int c);
 char			*ft_strnstr(const char *s1, const char *s2, size_t n);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
-int				ft_atoi(const char *str, int *i);
+int				ft_atoi(char *str, int *i);
 int				ft_isalpha(int c);
 int				ft_isdigit(int c);
 int				ft_isalnum (int c);

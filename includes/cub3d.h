@@ -6,7 +6,7 @@
 /*   By: mtak <mtak@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/10 23:53:42 by mtak              #+#    #+#             */
-/*   Updated: 2021/05/18 10:49:30 by mtak             ###   ########.fr       */
+/*   Updated: 2021/05/21 10:24:08 by mtak             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <math.h>
 # include "mlx.h"
 # include "libft.h"
-#include "mlx_custom.h"
+# include "mlx_custom.h"
 
 # define FALSE					0
 # define TRUE					1
@@ -268,7 +268,7 @@ int				parse_color(char *line);
 int				type_c_fc(t_game *game, char *line, int tp);
 int				type_c_d(t_game *game, char *line, int tp);
 char			*parse_path(char *line);
-void 			trim_comma(char *line, int *i, int *j);
+void			trim_comma(char *line, int *i, int *j);
 int				is_valid_color(int *j, int colors[]);
 int				space_pass(char *line, int *i);
 
